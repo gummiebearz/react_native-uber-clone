@@ -1,15 +1,17 @@
+import { router } from "expo-router";
+import { useRef, useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { router } from "expo-router";
 import Swiper from "react-native-swiper";
-import { useRef, useState } from "react";
-import { onboarding } from "@/constants";
-import CustomButton from "@/components/CustomButton";
 
-const Onboarding = () => {
+import CustomButton from "@/components/CustomButton";
+import { onboarding } from "@/constants";
+
+const Home = () => {
   const swiperRef = useRef<Swiper>(null);
-  const [active, setActive] = useState(0);
-  const isLastSlide = active === onboarding.length - 1;
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const isLastSlide = activeIndex === onboarding.length - 1;
 
   return (
     <SafeAreaView className="flex h-full items-center justify-between bg-white">
@@ -31,7 +33,7 @@ const Onboarding = () => {
         activeDot={
           <View className="w-[32px] h-[4px] mx-1 bg-[#0286FF] rounded-full" />
         }
-        onIndexChanged={(index) => setActive(index)}
+        onIndexChanged={(index) => setActiveIndex(index)}
       >
         {onboarding.map((item) => (
           <View key={item.id} className="flex items-center justify-center p-5">
@@ -45,7 +47,7 @@ const Onboarding = () => {
                 {item.title}
               </Text>
             </View>
-            <Text className="text-lg font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3">
+            <Text className="text-md font-JakartaSemiBold text-center text-[#858585] mx-10 mt-3">
               {item.description}
             </Text>
           </View>
@@ -59,10 +61,10 @@ const Onboarding = () => {
             ? router.replace("/(auth)/sign-up")
             : swiperRef.current?.scrollBy(1)
         }
-        className="w-11/12 mt-10"
+        className="w-11/12 mt-10 mb-5"
       />
     </SafeAreaView>
   );
 };
 
-export default Onboarding;
+export default Home;
