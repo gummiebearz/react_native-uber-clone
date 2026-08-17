@@ -100,7 +100,7 @@ const SignUp = () => {
     }
 
     try {
-      await fetchAPI("/(api)/user", {
+      await fetchAPI("/user", {
         method: "POST",
         body: JSON.stringify({
           name: form.name,
