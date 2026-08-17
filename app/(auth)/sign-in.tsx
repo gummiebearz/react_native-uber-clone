@@ -1,18 +1,42 @@
-import { Image, ScrollView, Text, View } from "react-native";
+import { Alert, Image, ScrollView, Text, View } from "react-native";
 import { icons, images } from "@/constants";
 import InputField from "@/components/InputField";
 import { useState } from "react";
 import CustomButton from "@/components/CustomButton";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import OAuth from "@/components/OAuth";
+import { useSignIn } from "@clerk/expo";
 
 const SignIn = () => {
+  const { signIn } = useSignIn();
   const [form, setForm] = useState({
     email: "",
     password: "",
   });
 
-  const onSignInPress = async () => {};
+  const onSignInPress = async () => {
+    const { error } = await signIn.password({
+      emailAddress: form.email,
+      password: form.password,
+    });
+
+    if (error) {
+      console.error(JSON.stringify(error), null, 2);
+
+      Alert.alert("Error", error?.errors[0].longMessage);
+    }
+
+    if (signIn.status === "complete") {
+      const { error: finalizeError } = await signIn.finalize();
+
+      if (finalizeError) {
+        console.error(JSON.stringify(finalizeError, null, 2));
+        Alert.alert("Error", finalizeError?.errors[0].longMessage);
+      }
+
+      router.replace("/(root)/(tabs)/home");
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-white" keyboardShouldPersistTaps="handled">
