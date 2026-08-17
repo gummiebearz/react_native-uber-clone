@@ -24,6 +24,8 @@ const SignIn = () => {
       console.error(JSON.stringify(error), null, 2);
 
       Alert.alert("Error", error?.errors[0].longMessage);
+
+      return;
     }
 
     if (signIn.status === "complete") {
@@ -32,6 +34,8 @@ const SignIn = () => {
       if (finalizeError) {
         console.error(JSON.stringify(finalizeError, null, 2));
         Alert.alert("Error", finalizeError?.errors[0].longMessage);
+
+        return;
       }
 
       router.replace("/(root)/(tabs)/home");
