@@ -99,36 +99,45 @@ const SignUp = () => {
       return;
     }
 
-    // TODO: Insert new user to database
-    await fetchAPI("/(api)/user", {
-      method: "POST",
-      body: JSON.stringify({
-        name: form.name,
-        email: form.email,
-        clerkId: signUp.createdUserId,
-      }),
-    });
+    try {
+      await fetchAPI("/(api)/user", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          clerkId: signUp.createdUserId,
+        }),
+      });
 
-    // Make new Clerk session active
-    const { error: finalizeError } = await signUp.finalize();
+      // Make new Clerk session active
+      const { error: finalizeError } = await signUp.finalize();
 
-    if (finalizeError) {
-      console.error(JSON.stringify(finalizeError, null, 2));
+      if (finalizeError) {
+        console.error(JSON.stringify(finalizeError, null, 2));
+
+        setVerification((_prev) => ({
+          ..._prev,
+          error:
+            finalizeError?.errors[0]?.longMessage ||
+            "Unable to complete sign up",
+          state: "failed",
+        }));
+
+        return;
+      }
 
       setVerification((_prev) => ({
         ..._prev,
-        error:
-          finalizeError?.errors[0]?.longMessage || "Unable to complete sign up",
+        state: "success",
+      }));
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
+      setVerification((_prev) => ({
+        ..._prev,
+        error: "Unable to create user in database",
         state: "failed",
       }));
-
-      return;
     }
-
-    setVerification((_prev) => ({
-      ..._prev,
-      state: "success",
-    }));
   };
 
   return (
