@@ -7,6 +7,7 @@ import { Link, router } from "expo-router";
 import OAuth from "@/components/OAuth";
 import { useAuth, useSignUp } from "@clerk/expo";
 import { ReactNativeModal } from "react-native-modal";
+import { fetchAPI } from "@/lib/fetch";
 
 const SignUp = () => {
   const { signUp, errors } = useSignUp();
@@ -33,12 +34,6 @@ const SignUp = () => {
 
     if (error) {
       console.error(JSON.stringify(error, null, 2));
-
-      // setVerification((_prev) => ({
-      //   ..._prev,
-      //   error: error?.errors[0]?.longMessage || "Unable to create account",
-      //   state: "error",
-      // }));
 
       Alert.alert("Error", error.errors[0].longMessage);
 
@@ -104,28 +99,45 @@ const SignUp = () => {
       return;
     }
 
-    // TODO: Insert new user to database
+    try {
+      await fetchAPI("/user", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          clerkId: signUp.createdUserId,
+        }),
+      });
 
-    // Make new Clerk session active
-    const { error: finalizeError } = await signUp.finalize();
+      // Make new Clerk session active
+      const { error: finalizeError } = await signUp.finalize();
 
-    if (finalizeError) {
-      console.error(JSON.stringify(finalizeError, null, 2));
+      if (finalizeError) {
+        console.error(JSON.stringify(finalizeError, null, 2));
+
+        setVerification((_prev) => ({
+          ..._prev,
+          error:
+            finalizeError?.errors[0]?.longMessage ||
+            "Unable to complete sign up",
+          state: "failed",
+        }));
+
+        return;
+      }
 
       setVerification((_prev) => ({
         ..._prev,
-        error:
-          finalizeError?.errors[0]?.longMessage || "Unable to complete sign up",
+        state: "success",
+      }));
+    } catch (error) {
+      console.error(JSON.stringify(error, null, 2));
+      setVerification((_prev) => ({
+        ..._prev,
+        error: "Unable to create user in database",
         state: "failed",
       }));
-
-      return;
     }
-
-    setVerification((_prev) => ({
-      ..._prev,
-      state: "success",
-    }));
   };
 
   return (
