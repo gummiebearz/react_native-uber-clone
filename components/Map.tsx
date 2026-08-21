@@ -109,7 +109,11 @@ const Map = () => {
   return (
     <MapView
       provider={PROVIDER_DEFAULT}
-      className="w-full h-full rounded-2xl"
+      style={{
+        height: "100%",
+        width: "100%",
+        borderRadius: 16,
+      }}
       tintColor="black"
       mapType="mutedStandard"
       showsPointsOfInterest={false}

@@ -16,128 +16,6 @@ import Map from "@/components/Map";
 import { useLocationStore } from "@/store";
 import { useEffect, useState } from "react";
 
-const Home = () => {
-  const { setUserLocation, setDestinationLocation } = useLocationStore();
-  const { user } = useUser();
-  const loading = false;
-
-  const [hasPermissions, setHasPermissions] = useState<boolean>(false);
-
-  const handleSignOutPress = () => {};
-  const handleDestinationPress = () => {};
-
-  useEffect(() => {
-    const requestLocation = async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-
-      if (status !== "granted") {
-        setHasPermissions(() => false);
-        return;
-      }
-
-      let location = await Location.getCurrentPositionAsync();
-      const address = await Location.reverseGeocodeAsync({
-        latitude: location.coords?.latitude!,
-        longitude: location.coords?.longitude!,
-        // latitude: 37.78825,
-        // longitude: -122.4324,
-      });
-
-      setUserLocation({
-        latitude: location.coords?.latitude!,
-        longitude: location.coords?.longitude!,
-        address: `${address[0].name}, ${address[0].region}`,
-      });
-
-      setHasPermissions(() => true);
-    };
-
-    requestLocation();
-  }, []);
-
-  // @ts-ignore
-  return (
-    <SafeAreaView className="bg-general-500">
-      {/*<Show when="signed-in">*/}
-      {/*  <Text>Hello, {user?.emailAddresses[0].emailAddress}</Text>*/}
-      {/*</Show>*/}
-      {/*<Show when="signed-out">*/}
-      {/*  <Link href="/sign-in">*/}
-      {/*    <Text>Sign In</Text>*/}
-      {/*  </Link>*/}
-      {/*  <Link href="/sign-up">*/}
-      {/*    <Text>Sign Up</Text>*/}
-      {/*  </Link>*/}
-      {/*</Show>*/}
-      <FlatList
-        data={recentRides?.slice(0, 5)}
-        renderItem={({ item }) => <RideCard ride={item} />}
-        className="px-5"
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          paddingBottom: 100,
-        }}
-        ListEmptyComponent={() => (
-          <View className="flex flex-col items-center justify-center">
-            {!loading ? (
-              <>
-                <Image
-                  source={images.noResult}
-                  className="w-40 h-40"
-                  alt="No recent rides found"
-                  resizeMode="contain"
-                />
-                <Text className="text-sm">No recent rides found</Text>
-              </>
-            ) : (
-              <ActivityIndicator size="small" color="#000" />
-            )}
-          </View>
-        )}
-        ListHeaderComponent={() => (
-          <>
-            <View className="flex flex-row items-center justify-between my-5">
-              <Text className="text-2xl capitalize font-JakartaExtraBold">
-                Welcome{", "}
-                {user?.firstName ||
-                  user?.emailAddresses[0].emailAddress.split("@")[0]}
-              </Text>
-              <TouchableOpacity
-                onPress={handleSignOutPress}
-                className="justify-center items-center w-10 h-10 rounded-full bg-white"
-              >
-                <Image source={icons.out} className="w-4 h-4" />
-              </TouchableOpacity>
-            </View>
-
-            {/* GoogleTextInput */}
-            <GoogleTextInput
-              icon={icons.search}
-              containerStyle="bg-white shadow-md shadow-neutral-300"
-              handlePress={handleDestinationPress}
-            />
-
-            <>
-              <Text className="text-xl font-JakartaBold mt-5 mb-3">
-                Your Current Location
-              </Text>
-              <View className="flex flex-row items-center bg-transparent w-full h-[300px]">
-                <Map />
-              </View>
-            </>
-
-            <Text className="text-xl font-JakartaBold mt-5 mb-3">
-              Recent Rides
-            </Text>
-          </>
-        )}
-      />
-    </SafeAreaView>
-  );
-};
-
-export default Home;
-
 const recentRides = [
   {
     ride_id: "1",
@@ -244,3 +122,113 @@ const recentRides = [
     },
   },
 ];
+
+const Home = () => {
+  const { setUserLocation, setDestinationLocation } = useLocationStore();
+  const { user } = useUser();
+  const loading = false;
+
+  const [hasPermissions, setHasPermissions] = useState<boolean>(false);
+
+  const handleSignOutPress = () => {};
+  const handleDestinationPress = () => {};
+
+  useEffect(() => {
+    const requestLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        setHasPermissions(() => false);
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync();
+      const address = await Location.reverseGeocodeAsync({
+        latitude: location.coords?.latitude!,
+        longitude: location.coords?.longitude!,
+        // latitude: 37.78825,
+        // longitude: -122.4324,
+      });
+
+      setUserLocation({
+        latitude: location.coords?.latitude!,
+        longitude: location.coords?.longitude!,
+        address: `${address[0].name}, ${address[0].region}`,
+      });
+
+      setHasPermissions(() => true);
+    };
+
+    requestLocation();
+  }, []);
+
+  return (
+    <SafeAreaView className="bg-general-500">
+      <FlatList
+        data={recentRides?.slice(0, 5)}
+        renderItem={({ item }) => <RideCard ride={item} />}
+        className="px-5"
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={{
+          paddingBottom: 100,
+        }}
+        ListEmptyComponent={() => (
+          <View className="flex flex-col items-center justify-center">
+            {!loading ? (
+              <>
+                <Image
+                  source={images.noResult}
+                  className="w-40 h-40"
+                  alt="No recent rides found"
+                  resizeMode="contain"
+                />
+                <Text className="text-sm">No recent rides found</Text>
+              </>
+            ) : (
+              <ActivityIndicator size="small" color="#000" />
+            )}
+          </View>
+        )}
+        ListHeaderComponent={() => (
+          <>
+            <View className="flex flex-row items-center justify-between my-5">
+              <Text className="text-2xl capitalize font-JakartaExtraBold">
+                Welcome{", "}
+                {user?.firstName ||
+                  user?.emailAddresses[0].emailAddress.split("@")[0]}
+              </Text>
+              <TouchableOpacity
+                onPress={handleSignOutPress}
+                className="justify-center items-center w-10 h-10 rounded-full bg-white"
+              >
+                <Image source={icons.out} className="w-4 h-4" />
+              </TouchableOpacity>
+            </View>
+
+            {/* GoogleTextInput */}
+            <GoogleTextInput
+              icon={icons.search}
+              containerStyle="bg-white shadow-md shadow-neutral-300"
+              handlePress={handleDestinationPress}
+            />
+
+            <>
+              <Text className="text-xl font-JakartaBold mt-5 mb-3">
+                Your Current Location
+              </Text>
+              <View className="flex flex-row items-center bg-transparent w-full h-[300px]">
+                <Map />
+              </View>
+            </>
+
+            <Text className="text-xl font-JakartaBold mt-5 mb-3">
+              Recent Rides
+            </Text>
+          </>
+        )}
+      />
+    </SafeAreaView>
+  );
+};
+
+export default Home;
