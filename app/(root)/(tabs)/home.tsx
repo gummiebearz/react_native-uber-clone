@@ -1,3 +1,4 @@
+import * as Location from "expo-location";
 import { useUser } from "@clerk/expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 import {
@@ -12,13 +13,47 @@ import RideCard from "@/components/RideCard";
 import { icons, images } from "@/constants";
 import GoogleTextInput from "@/components/GoogleTextInput";
 import Map from "@/components/Map";
+import { useLocationStore } from "@/store";
+import { useEffect, useState } from "react";
 
 const Home = () => {
+  const { setUserLocation, setDestinationLocation } = useLocationStore();
   const { user } = useUser();
   const loading = false;
 
+  const [hasPermissions, setHasPermissions] = useState<boolean>(false);
+
   const handleSignOutPress = () => {};
   const handleDestinationPress = () => {};
+
+  useEffect(() => {
+    const requestLocation = async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+
+      if (status !== "granted") {
+        setHasPermissions(() => false);
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync();
+      const address = await Location.reverseGeocodeAsync({
+        latitude: location.coords?.latitude!,
+        longitude: location.coords?.longitude!,
+        // latitude: 37.78825,
+        // longitude: -122.4324,
+      });
+
+      setUserLocation({
+        latitude: location.coords?.latitude!,
+        longitude: location.coords?.longitude!,
+        address: `${address[0].name}, ${address[0].region}`,
+      });
+
+      setHasPermissions(() => true);
+    };
+
+    requestLocation();
+  }, []);
 
   // @ts-ignore
   return (
