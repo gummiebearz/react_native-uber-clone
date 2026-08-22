@@ -68,6 +68,7 @@ const Map = () => {
   const [markers, setMarkers] = useState<MarkerData[]>([]);
 
   useEffect(() => {
+    setDrivers(drivers);
     if (Array.isArray(drivers)) {
       if (!userLatitude || !userLongitude) return;
 
@@ -118,7 +119,7 @@ const Map = () => {
       mapType="mutedStandard"
       showsPointsOfInterest={false}
       initialRegion={region}
-      // showsUserLocation={true}
+      showsUserLocation={true}
       userInterfaceStyle="light"
     >
       {markers.map((marker, index) => (
