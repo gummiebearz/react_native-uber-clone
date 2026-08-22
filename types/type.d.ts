@@ -128,7 +128,46 @@ declare interface DriverStore {
   drivers: MarkerData[];
   selectedDriver: number | null;
   setSelectedDriver: (driverId: number) => void;
-  setDrivers: (drivers: MarkerData[]) => void;
+  setDrivers: (
+    drivers: (
+      | {
+          driver_id: number;
+          first_name: string;
+          last_name: string;
+          profile_image_url: string;
+          car_image_url: string;
+          car_seats: number;
+          rating: number;
+        }
+      | {
+          driver_id: number;
+          first_name: string;
+          last_name: string;
+          profile_image_url: string;
+          car_image_url: string;
+          car_seats: number;
+          rating: number;
+        }
+      | {
+          driver_id: number;
+          first_name: string;
+          last_name: string;
+          profile_image_url: string;
+          car_image_url: string;
+          car_seats: number;
+          rating: number;
+        }
+      | {
+          driver_id: number;
+          first_name: string;
+          last_name: string;
+          profile_image_url: string;
+          car_image_url: string;
+          car_seats: number;
+          rating: number;
+        }
+    )[],
+  ) => void;
   clearSelectedDriver: () => void;
 }
 
